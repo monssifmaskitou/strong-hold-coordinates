@@ -1,4 +1,9 @@
+from pathlib import Path
 import customtkinter as ctk
+
+BASE_DIR = Path(__file__).parent
+ICON_PATH = BASE_DIR / "icon.png"
+
 
 app = ctk.CTk()
 app.title("Coordinate Tool")

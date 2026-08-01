@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Stronghold Finder
+Comment=Minecraft Stronghold Triangulation Calculator
+Exec=bash -c 'DIR="$(dirname "%k")"; mkdir -p ~/.local/share/icons; cp "$DIR/icon.png" ~/.local/share/icons/stronghold-finder.png 2>/dev/null; "$DIR/.venv/bin/python" "$DIR/app.py"'
+Icon=stronghold-finder
+Terminal=false
+Categories=Game;Utility;

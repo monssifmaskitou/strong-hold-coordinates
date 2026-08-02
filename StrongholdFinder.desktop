@@ -1,9 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Type=Application
-Name=Stronghold Finder
-Comment=Minecraft Stronghold Triangulation Calculator
-Exec=/bin/bash /home/monssif/Desktop/coordinatesapp/launch.sh
-Icon=/home/monssif/Desktop/coordinatesapp/icon.png
-Terminal=false
-Categories=Utility;Development;

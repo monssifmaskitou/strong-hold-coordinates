@@ -1,7 +1,12 @@
 import math
-from tkinter import messagebox
+from pathlib import Path
+from tkinter import PhotoImage, messagebox
 
 import customtkinter as ctk
+
+
+BASE_DIR = Path(__file__).resolve().parent
+ICON_PATH = BASE_DIR / "icon.png"
 
 
 def get_stronghold_coords(x1, z1, yaw1, x2, z2, yaw2):
@@ -28,6 +33,9 @@ def main():
     app.title("Stronghold Finder")
     app.geometry("860x560")
     app.minsize(760, 500)
+
+    if ICON_PATH.exists():
+        app.iconphoto(True, PhotoImage(file=str(ICON_PATH)))
 
     app.grid_columnconfigure(0, weight=1)
     app.grid_rowconfigure(0, weight=1)

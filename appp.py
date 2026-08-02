@@ -52,12 +52,12 @@ def main():
     subtitle_label.grid(row=1, column=0, columnspan=2, padx=20, pady=(0, 18), sticky="w")
 
     def build_throw_frame(parent, title, column):
-        frame = ctk.CTkScrollableFrame(parent, corner_radius=16, height=250)
+        frame = ctk.CTkFrame(parent, corner_radius=16)
         frame.grid(row=2, column=column, padx=16, pady=8, sticky="nsew")
         frame.grid_columnconfigure(0, weight=1)
 
         header = ctk.CTkLabel(frame, text=title, font=ctk.CTkFont(size=18, weight="bold"))
-        header.grid(row=0, column=0, padx=18, pady=(6, 10), sticky="w")
+        header.grid(row=0, column=0, padx=18, pady=(18, 10), sticky="w")
 
         labels = ["X Coordinate", "Z Coordinate", "Yaw"]
         entries = {}

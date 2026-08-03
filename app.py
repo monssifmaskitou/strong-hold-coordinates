@@ -10,17 +10,24 @@ ICON_PATH = BASE_DIR / "icon.png"
 
 
 def get_stronghold_coords(x1, z1, yaw1, x2, z2, yaw2):
-    rad1 = math.radians(-yaw1 - 90)
-    rad2 = math.radians(-yaw2 - 90)
+    yaw1_rad = math.radians(yaw1)
+    yaw2_rad = math.radians(yaw2)
 
-    m1 = math.tan(rad1)
-    m2 = math.tan(rad2)
+    dx1 = -math.sin(yaw1_rad)
+    dz1 = math.cos(yaw1_rad)
+    dx2 = -math.sin(yaw2_rad)
+    dz2 = math.cos(yaw2_rad)
 
-    if math.isclose(m1, m2, abs_tol=1e-5):
+    denominator = dx1 * dz2 - dz1 * dx2
+    if math.isclose(denominator, 0.0, abs_tol=1e-9):
         return None
 
-    x_target = (m1 * x1 - m2 * x2 + z2 - z1) / (m1 - m2)
-    z_target = m1 * (x_target - x1) + z1
+    offset_x = x2 - x1
+    offset_z = z2 - z1
+    distance = (offset_x * dz2 - offset_z * dx2) / denominator
+
+    x_target = x1 + distance * dx1
+    z_target = z1 + distance * dz1
 
     return round(x_target), round(z_target)
 
@@ -45,12 +52,66 @@ def main():
     main_frame.grid_columnconfigure((0, 1), weight=1)
     main_frame.grid_rowconfigure(2, weight=1)
 
+    history_entries = []
+
+    def open_history():
+        history_window = ctk.CTkToplevel(app)
+        history_window.title("Calculation History")
+        history_window.geometry("560x420")
+        history_window.minsize(460, 320)
+        history_window.transient(app)
+        history_window.grab_set()
+
+        history_window.grid_columnconfigure(0, weight=1)
+        history_window.grid_rowconfigure(1, weight=1)
+
+        header_label = ctk.CTkLabel(
+            history_window,
+            text="Calculation History",
+            font=ctk.CTkFont(size=22, weight="bold"),
+        )
+        header_label.grid(row=0, column=0, padx=20, pady=(18, 10), sticky="w")
+
+        if not history_entries:
+            empty_label = ctk.CTkLabel(
+                history_window,
+                text="No calculations yet.",
+                text_color="#A1A1AA",
+            )
+            empty_label.grid(row=1, column=0, padx=20, pady=20, sticky="nw")
+            return
+
+        history_frame = ctk.CTkScrollableFrame(history_window, corner_radius=16)
+        history_frame.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="nsew")
+        history_frame.grid_columnconfigure(0, weight=1)
+
+        for index, entry in enumerate(reversed(history_entries), start=1):
+            item_frame = ctk.CTkFrame(history_frame, corner_radius=14)
+            item_frame.grid(row=index - 1, column=0, padx=10, pady=8, sticky="ew")
+            item_frame.grid_columnconfigure(0, weight=1)
+
+            item_label = ctk.CTkLabel(
+                item_frame,
+                text=entry,
+                justify="left",
+                anchor="w",
+                wraplength=480,
+            )
+            item_label.grid(row=0, column=0, padx=14, pady=14, sticky="w")
+
+    header_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+    header_frame.grid(row=0, column=0, columnspan=2, padx=20, pady=(20, 6), sticky="ew")
+    header_frame.grid_columnconfigure(0, weight=1)
+
     title_label = ctk.CTkLabel(
-        main_frame,
+        header_frame,
         text="Stronghold Finder",
         font=ctk.CTkFont(size=28, weight="bold"),
     )
-    title_label.grid(row=0, column=0, columnspan=2, padx=20, pady=(20, 6), sticky="w")
+    title_label.grid(row=0, column=0, padx=(0, 12), sticky="w")
+
+    history_button = ctk.CTkButton(header_frame, text="History", width=100, command=open_history)
+    history_button.grid(row=0, column=1, sticky="e")
 
     subtitle_label = ctk.CTkLabel(
         main_frame,
@@ -128,6 +189,11 @@ def main():
         result_label.configure(
             text=f"Stronghold is near X: {coords[0]}, Z: {coords[1]}",
             text_color="#22C55E",
+        )
+        history_entries.append(
+            f"Throw 1: X={x1}, Z={z1}, Yaw={yaw1}\n"
+            f"Throw 2: X={x2}, Z={z2}, Yaw={yaw2}\n"
+            f"Result: X={coords[0]}, Z={coords[1]}"
         )
 
     button_frame = ctk.CTkFrame(main_frame, fg_color="transparent")

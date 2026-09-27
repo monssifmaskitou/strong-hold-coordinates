@@ -1,6 +1,38 @@
 import math
+import subprocess
+import sys
 from pathlib import Path
 from tkinter import PhotoImage, messagebox
+
+
+def ensure_requirements() -> None:
+    try:
+        import customtkinter  # noqa: F401
+        return
+    except ModuleNotFoundError:
+        pass
+
+    requirements_file = Path(__file__).resolve().parent / "requirements.txt"
+    commands = [
+        [sys.executable, "-m", "pip", "install", "-r", str(requirements_file)],
+        [sys.executable, "-m", "pip", "install", "--user", "-r", str(requirements_file)],
+        [sys.executable, "-m", "pip", "install", "--break-system-packages", "-r", str(requirements_file)],
+    ]
+
+    for command in commands:
+        try:
+            subprocess.check_call(command)
+            break
+        except (subprocess.CalledProcessError, OSError):
+            continue 
+    else:
+        raise RuntimeError(
+            "Could not install the required packages. Please install them manually: "
+            "python -m pip install -r requirements.txt"
+        )
+
+
+ensure_requirements()
 
 import customtkinter as ctk
 
